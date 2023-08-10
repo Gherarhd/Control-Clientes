@@ -1,5 +1,3 @@
-"use strict";
-
 (function () {
   let DB;
   const formulario = document.querySelector("#formulario");
@@ -23,7 +21,7 @@
 
   function validarCliente(e) {
     e.preventDefault();
-    console.log("Validando....");
+
     //leer todos los input
     const nombre = document.querySelector("#nombre").value;
     const email = document.querySelector("#email").value;
@@ -34,9 +32,91 @@
       imprimirAlerta("Todos los campos son obligatorios", "error");
       return;
     }
+
+    //Crea un objeto con la informacion
+
+    const cliente = {
+      nombre: nombre,
+      email: email,
+      telefono: telefono,
+      empresa: empresa,
+    };
+
+    cliente.id = Date.now();
+
+    console.log(cliente);
+    crearNuevoCliente(cliente);
+  }
+
+  function crearNuevoCliente(cliente) {
+    const transaction = DB.transaction(["crm"], "readwrite");
+
+    const objectStore = transaction.objectStore("crm");
+
+    objectStore.add(cliente);
+
+    transaction.onerror = () => {
+      imprimirAlerta("Hubo un error", "error");
+    };
+
+    transaction.oncomplete = () => {
+      imprimirAlerta("Datos cargados correctamente");
+
+      spiner();
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 3000);
+    };
+  }
+
+  function spiner() {
+    const spiner = document.createElement("div");
+    spiner.classList.add("lds-ellipsis");
+    spiner.innerHTML = `<div></div><div></div><div></div>`;
+
+    formulario.appendChild(spiner);
   }
 
   function imprimirAlerta(mensaje, tipo) {
-    // falta definir la funcion...................
+    //elimina la repetición de la alerta
+    const alerta = document.querySelector(".alerta");
+
+    if (!alerta) {
+      //crear alerta
+
+      const divMensaje = document.createElement("div");
+      divMensaje.classList.add(
+        "px-4",
+        "py-3",
+        "rounded",
+        "max-w-lg",
+        "mx-auto",
+        "mt-6",
+        "text-center",
+        "border",
+        "alerta"
+      );
+
+      if (tipo === "error") {
+        divMensaje.classList.add(
+          "bg-red-200",
+          "border-red-400",
+          "text-red-700"
+        );
+      } else {
+        divMensaje.classList.add(
+          "bg-green-100",
+          "border-green-400",
+          "text-green-700"
+        );
+      }
+
+      divMensaje.textContent = mensaje;
+      formulario.appendChild(divMensaje);
+
+      setTimeout(() => {
+        divMensaje.remove();
+      }, 5000);
+    }
   }
 })();
