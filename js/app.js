@@ -1,4 +1,3 @@
-"use strict";
 // NOTA: Función inmediatamente invocada o IIFE  es una forma común de crear un ámbito aislado para evitar que las variables y funciones definidas dentro de la función colisionen con otras variables en el ámbito global. También es útil para mantener la privacidad y evitar conflictos de nombres con otras bibliotecas o códigos en la página.
 (function () {
   let DB;
@@ -26,7 +25,7 @@
       const db = e.target.result;
 
       const objectStore = db.createObjectStore("crm", {
-        keypath: "id",
+        keyPath: "id",
         autoIncrement: true,
       });
 
